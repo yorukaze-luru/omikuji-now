@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>今日のおみくじ</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Noto Serif JP', serif;
+      background: #fdfaf5;
+      color: #333;
+      text-align: center;
+      padding: 2em 1em;
+    }
+    h1 {
+      font-size: 2em;
+      margin-bottom: 0.5em;
+    }
+    input, button {
+      font-size: 1em;
+      padding: 0.6em;
+      margin: 0.5em;
+      width: 90%;
+      max-width: 300px;
+      box-sizing: border-box;
+      font-family: 'Noto Serif JP', serif;
+    }
+    button {
+      background: #b22222;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+    #result-wrapper {
+      perspective: 1000px;
+      overflow: hidden;
+      height: 0;
+      transition: height 0.8s ease;
+    }
+    #result {
+      transform: translateY(-100%);
+      opacity: 0;
+      transition: transform 0.8s ease, opacity 0.8s ease;
+      background: #fff;
+      border: 2px solid #8b0000;
+      border-radius: 10px;
+      padding: 1.5em;
+      max-width: 600px;
+      margin: 2em auto 0;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+    #result.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    #result-wrapper.open {
+      height: auto;
+    }
+    .fortune-title {
+      font-size: 1.6em;
+      font-weight: bold;
+      margin-bottom: 1em;
+      color: #8b0000;
+    }
+    .fortune-section {
+      text-align: left;
+      margin-top: 1em;
+    }
+    .fortune-section h3 {
+      margin: 0.5em 0 0.2em;
+      font-size: 1.1em;
+      color: #b22222;
+    }
+    .fortune-section p {
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎐 今日のおみくじ 🎐</h1>
+  <p>あなたの生年月日を入力してください</p>
+  <input type="date" id="birthdate" />
+  <button onclick="drawOmikuji()">おみくじを引く！</button>
+
+  <div id="result-wrapper">
+    <div id="result"></div>
+  </div>
+
+  <script>
+    const fortunes = [
+      { type: "大吉", message: "運気絶好調！すべてがうまくいく日です！" },
+      { type: "中吉", message: "良いことが起こる予感。前向きに行動して吉。" },
+      { type: "小吉", message: "小さな幸せが訪れそう。感謝の気持ちを忘れずに。" },
+      { type: "吉", message: "穏やかな一日。自然体で過ごしましょう。" },
+      { type: "半吉", message: "少しずつ運が向いてきます。焦らずに。" },
+      { type: "末吉", message: "まだ芽は出ないが、努力は報われる日。" },
+      { type: "凶", message: "注意が必要な日。無理せず慎重に行動を。" }
+    ];
+
+    const categories = {
+      "💖 恋愛運": ["運命の出会いがあるかも！", "素直な気持ちが伝わる日。", "焦らずじっくりと距離を縮めて。", "相手の気持ちを尊重して。", "誤解に注意。冷静な対応を。"],
+      "💼 仕事運": ["新しい挑戦が成功の鍵。", "チームワークが光る日。", "地道な努力が評価される。", "周囲との調和を大切に。", "慎重な判断が吉。"],
+      "💰 金運": ["思わぬ収入があるかも！", "節約が功を奏する日。", "買い物は計画的に。", "財布の紐は少し固めに。", "投資は慎重に。"],
+      "🩺 健康運": ["体調良好！運動にも最適。", "バランスの良い食事を。", "早寝早起きでリズムを整えて。", "疲れが出やすいので休息を。", "無理は禁物。体を労って。"],
+      "📚 勉強運": ["集中力が高まり成果が出る！", "新しい知識が身につく日。", "復習に力を入れると◎。", "誘惑に負けずに努力を。", "気分転換も大切に。"],
+      "👥 対人運": ["良い縁がつながる日。", "感謝の気持ちを伝えて吉。", "誤解が解けて関係が深まる。", "相手の立場に立って考えて。", "無理に合わせず自分らしく。"],
+      "🧳 旅行運": ["素敵な発見がありそう！", "計画的に動くとスムーズ。", "道中に幸運が待っている。", "忘れ物に注意して。", "無理な予定は避けましょう。"],
+      "🙏 願い事": ["願いは叶う兆しあり！", "努力すれば近づける。", "少し時間がかかりそう。", "周囲の協力が鍵に。", "今は準備のとき。"],
+      "🎨 ラッキーアイテム": ["赤い小物", "お気に入りの本", "新しい靴", "手帳", "音楽プレイヤー"]
+    };
+
+    function sumDigits(num) {
+      return num.toString().split("").reduce((sum, d) => sum + parseInt(d), 0);
+    }
+
+    function drawOmikuji() {
+      const birthInput = document.getElementById("birthdate").value;
+      if (!birthInput) {
+        alert("生年月日を入力してください！");
+        return;
+      }
+
+      const birthDate = new Date(birthInput);
+      const now = new Date();
+
+      const total =
+        sumDigits(birthDate.getFullYear()) +
+        sumDigits(birthDate.getMonth() + 1) +
+        sumDigits(birthDate.getDate()) +
+        sumDigits(now.getFullYear()) +
+        sumDigits(now.getMonth() + 1) +
+        sumDigits(now.getDate()) +
+        sumDigits(now.getHours()) +
+        sumDigits(now.getMinutes());
+
+      const fortune = fortunes[total % fortunes.length];
+
+      let html = `<div class="fortune-title">✨ ${fortune.type} ✨</div><p>${fortune.message}</p><div class="fortune-section">`;
+
+      let i = 0;
+      for (const [title, messages] of Object.entries(categories)) {
+        const msg = messages[(total + i) % messages.length];
+        html += `<h3>${title}</h3><p>${msg}</p>`;
+        i++;
+      }
+
+      html += `</div>`;
+
+      const wrapper = document.getElementById("result-wrapper");
+      const result = document.getElementById("result");
+      result.classList.remove("show");
+      wrapper.classList.remove("open");
+      result.innerHTML = html;
+
+      // Trigger animation
+      setTimeout(() => {
+        wrapper.classList.add("open");
+        result.classList.add("show");
+      }, 100);
+    }
+  </script>
+</body>
+</html>
