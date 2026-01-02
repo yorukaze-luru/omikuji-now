@@ -35,7 +35,7 @@
 git clone https://github.com/yorukaze-luru/omikuji-now.git
 ```
 
-2. `index.html` をブラウザで開くだけ！
+2. `omikuji.html` をブラウザで開くだけ！
 
 ---
 
@@ -52,7 +52,7 @@ git clone https://github.com/yorukaze-luru/omikuji-now.git
 
 ```
 omikuji-now/
-├── index.html   # メインのHTMLファイル（すべてのロジックを内包）
+├── omikuji.html   # メインのHTMLファイル（すべてのロジックを内包）
 └── README.md    # このファイル
 ```
 
@@ -69,6 +69,13 @@ omikuji-now/
 - フォント: [Noto Serif JP](https://fonts.google.com/specimen/Noto+Serif+JP)
 - アイデア・デザイン: Inspired by traditional Japanese omikuji
 - 生成支援: **本ツールは Microsoft Copilot を活用してAI生成されました。**
+
+---
+
+## ■ 支援はこちらから
+<a href="https://www.buymeacoffee.com/yorukazeluru" target="_blank">
+  <img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" alt="Buy Me A Coffee" height="50">
+</a>
 
 ---
 
