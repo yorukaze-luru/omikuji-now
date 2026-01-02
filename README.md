@@ -32,16 +32,10 @@
 1. このリポジトリをクローンまたはZIPでダウンロードします。
 
 ```bash
-git clone https://github.com/your-username/kyou-no-omikuji.git
+git clone https://github.com/yorukaze-luru/omikuji-now.git
 ```
 
 2. `index.html` をブラウザで開くだけ！
-
----
-
-## 🖼️ スクリーンショット
-
-> ※ スクリーンショットをここに追加してください（例：`/screenshots/demo.png`）
 
 ---
 
@@ -57,7 +51,7 @@ git clone https://github.com/your-username/kyou-no-omikuji.git
 ## 📁 ファイル構成
 
 ```
-kyou-no-omikuji/
+omikuji-now/
 ├── index.html   # メインのHTMLファイル（すべてのロジックを内包）
 └── README.md    # このファイル
 ```
